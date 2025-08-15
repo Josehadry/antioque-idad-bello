@@ -1,0 +1,348 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antioqueñidad - Cultura, Gastronomía, Historia y Turismo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(to bottom, #f8f1e9, #e6d9c6);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.8;
+        }
+        header {
+            background: url('https://images.unsplash.com/photo-1597843786411-6b8a5e9b3a26?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+            color: white;
+            text-align: center;
+            padding: 120px 20px;
+            position: relative;
+            border-bottom: 8px solid #d4a017;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+        header h1 {
+            font-family: 'Merriweather', serif;
+            font-size: 3.5em;
+            margin: 0;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+            position: relative;
+            z-index: 2;
+        }
+        nav {
+            background: linear-gradient(to right, #008000, #005f00);
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 25px;
+            font-size: 1.3em;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            color: #d4a017;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        .section {
+            margin-bottom: 50px;
+            padding: 20px;
+            background: #fff8e1;
+            border-radius: 10px;
+            border: 2px solid #d4a017;
+            position: relative;
+        }
+        .section h2 {
+            font-family: 'Merriweather', serif;
+            color: #005f00;
+            font-size: 2.2em;
+            border-bottom: 3px solid #d4a017;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .section h2::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 4px;
+            background: #d4a017;
+            bottom: -3px;
+            left: 0;
+        }
+        .section p {
+            font-size: 1.2em;
+            color: #444;
+            margin: 15px 0;
+        }
+        .section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        .section img:hover {
+            transform: scale(1.05);
+        }
+        .paisa-decor {
+            background: url('https://www.textures.com/download/PBR0113/134688') repeat;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #d4a017;
+            background-blend-mode: overlay;
+            background-color: rgba(255, 248, 225, 0.9);
+        }
+        .paisa-decor::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/arabesque.png');
+            opacity: 0.1;
+            z-index: -1;
+        }
+        .interactive-item {
+            background: #f9e4b7;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .interactive-item:hover {
+            background: #d4a017;
+        }
+        .interactive-content {
+            display: none;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            margin-top: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .interactive-content img {
+            max-width: 50%;
+            margin: 10px 0;
+        }
+        footer {
+            background: linear-gradient(to right, #008000, #005f00);
+            color: white;
+            text-align: center;
+            padding: 25px 0;
+            margin-top: 30px;
+            font-size: 1.1em;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+        }
+        footer p {
+            margin: 0;
+            font-family: 'Merriweather', serif;
+        }
+        .decor-element {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: url('https://www.transparenttextures.com/patterns/coffee.png');
+            opacity: 0.2;
+            z-index: -1;
+        }
+        .decor-element.top-left {
+            top: 20px;
+            left: 20px;
+            transform: rotate(45deg);
+        }
+        .decor-element.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            transform: rotate(-45deg);
+        }
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.5em;
+            }
+            nav a {
+                display: block;
+                margin: 15px 0;
+                font-size: 1.1em;
+            }
+            .container {
+                padding: 15px;
+            }
+            .section h2 {
+                font-size: 1.8em;
+            }
+            .section p {
+                font-size: 1em;
+            }
+            .interactive-content img {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Antioqueñidad: El Alma de Nuestra Tierra</h1>
+    </header>
+    <nav>
+        <a href="#cultura">Cultura</a>
+        <a href="#gastronomia">Gastronomía</a>
+        <a href="#historia">Historia</a>
+        <a href="#turismo">Sitios Turísticos</a>
+    </nav>
+    <div class="container">
+        <div class="decor-element top-left"></div>
+        <div class="decor-element bottom-right"></div>
+        <div class="section" id="cultura">
+            <h2>Cultura Antioqueña</h2>
+            <div class="paisa-decor">
+                <p>La antioqueñidad es una forma de vida que trasciende fronteras, definida por la berraquera, la hospitalidad y el orgullo por la tierra. Los paisas son conocidos por su ingenio, espíritu emprendedor y calidez. Celebraciones como la <strong>Feria de las Flores</strong> en Medellín llenan las calles de color con desfiles de silleteros, música y tradiciones. La música tradicional, como el pasillo y la guasca, resuena en las parrandas paisas, donde la trova y el humor son protagonistas. Artesanías como el sombrero aguadeño y las ruanas reflejan el talento local, mientras que la fe y el optimismo son pilares de la identidad antioqueña.</p>
+                <img src="https://images.unsplash.com/photo-1627314075412-2f0b7a8a83e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Feria de las Flores">
+            </div>
+        </div>
+        <div class="section" id="gastronomia">
+            <h2>Gastronomía Paisa</h2>
+            <div class="paisa-decor">
+                <p>La gastronomía antioqueña es un festín de sabores que combina influencias indígenas, españolas y africanas. La <strong>Bandeja Paisa</strong>, un ícono nacional, incluye frijoles, arroz, chicharrón, carne molida, huevo frito, plátano maduro, arepa y aguacate, reflejando la abundancia de la región. Otros platos destacados son el <strong>sancocho antioqueño</strong>, la <strong>arepa de chócolo</strong>, el <strong>tamal antioqueño</strong> y la <strong>mazamorra con panela</strong>. Los postres, como las brevas con arequipe, y el café de origen completan esta experiencia culinaria. Cada bocado cuenta una historia de tradición y trabajo campesino.</p>
+                <img src="https://images.unsplash.com/photo-1597843786411-6b8a5e9b3a26?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Bandeja Paisa">
+                <div class="interactive-item" onclick="toggleContent('bandeja-paisa')">
+                    <h3>Bandeja Paisa</h3>
+                </div>
+                <div id="bandeja-paisa" class="interactive-content">
+                    <p>La Bandeja Paisa es más que un plato, es un símbolo de la abundancia antioqueña. Su origen se remonta a las largas jornadas de trabajo en el campo, donde los campesinos necesitaban comidas contundentes. Incluye hasta 13 ingredientes, cada uno con su propia historia. ¡Haz clic para descubrir más!</p>
+                    <img src="https://images.unsplash.com/photo-1597843786411-6b8a5e9b3a26?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Bandeja Paisa Detalle">
+                </div>
+                <div class="interactive-item" onclick="toggleContent('sancocho')">
+                    <h3>Sancocho Antioqueño</h3>
+                </div>
+                <div id="sancocho" class="interactive-content">
+                    <p>El sancocho es una sopa reconfortante que reúne yuca, plátano, maíz y carne, cocinados a fuego lento. Se dice que su preparación es un ritual familiar, donde cada ingrediente aporta sabor y tradición. Perfecto para los días fríos en las montañas antioqueñas.</p>
+                    <img src="https://images.unsplash.com/photo-1606850075886-6f0f92e43699?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Sancocho Antioqueño">
+                </div>
+                <div class="interactive-item" onclick="toggleContent('arepa-choclo')">
+                    <h3>Arepa de Chócolo</h3>
+                </div>
+                <div id="arepa-choclo" class="interactive-content">
+                    <p>La arepa de chócolo, dulce y suave, se elabora con maíz tierno y se asa a la parrilla. Es un acompañante ideal para el queso fresco o una taza de chocolate caliente, evocando las mañanas en los pueblos antioqueños.</p>
+                    <img src="https://images.unsplash.com/photo-1597843786411-6b8a5e9b3a26?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Arepa de Chócolo">
+                </div>
+            </div>
+        </div>
+        <div class="section" id="historia">
+            <h2>Historia de Antioquia</h2>
+            <div class="paisa-decor">
+                <p>La historia de Antioquia comienza con los pueblos indígenas como los Nutabes y Tahamíes, dedicados a la agricultura y la extracción de oro. La llegada de los españoles en 1509 marcó el inicio de la colonización, con la fundación de Santa Fe de Antioquia en 1541. En 1813, Antioquia logró su independencia, un hito celebrado cada 11 de agosto como el <strong>Día de la Antioqueñidad</strong>. El auge del café y el ferrocarril en los siglos XIX y XX impulsaron su desarrollo económico. Hoy, Antioquia es un centro industrial y cultural, con Medellín como su vibrante capital.</p>
+                <img src="https://images.unsplash.com/photo-1589994321235-8b67c3213d74?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Santa Fe de Antioquia">
+            </div>
+        </div>
+        <div class="section" id="turismo">
+            <h2>Sitios Turísticos</h2>
+            <div class="paisa-decor">
+                <p>Antioquia es un destino lleno de maravillas. <strong>Medellín</strong>, la ciudad de la eterna primavera, ofrece la Plaza Botero y el Pueblito Paisa. <strong>Guatapé</strong> enamora con sus zócalos coloridos y el imponente Peñón de Guatapé. <strong>Santa Fe de Antioquia</strong>, con su arquitectura colonial, es un viaje al pasado. <strong>Jardín</strong> combina naturaleza y gastronomía, mientras que el <strong>Parque Arví</strong> invita al ecoturismo con senderos y avistamiento de aves. Cada municipio, desde Urabá hasta el Suroeste, ofrece experiencias únicas que celebran la diversidad de Antioquia.</p>
+                <img src="https://images.unsplash.com/photo-1566416088968-65e2c3606c8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Peñón de Guatapé">
+                <div class="interactive-item" onclick="toggleContent('guatape-leyenda')">
+                    <h3>Leyenda del Peñón de Guatapé</h3>
+                </div>
+                <div id="guatape-leyenda" class="interactive-content">
+                    <p>Cuenta la leyenda que el Peñón de Guatapé, una roca de 220 metros, es un regalo de los dioses para proteger a los habitantes de la región. Los indígenas Tahamíes lo consideraban sagrado, y se dice que en noches de luna llena, los espíritus de los antiguos guardianes aún rondan su cima, cuidando la tierra.</p>
+                    <img src="https://images.unsplash.com/photo-1566416088968-65e2c3606c8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Peñón de Guatapé Leyenda">
+                </div>
+                <div class="interactive-item" onclick="toggleContent('santafe-leyenda')">
+                    <h3>Leyenda del Puente de Occidente</h3>
+                </div>
+                <div id="santafe-leyenda" class="interactive-content">
+                    <p>El Puente de Occidente, construido en 1887, es una maravilla de la ingeniería antioqueña. Según la leyenda, el ingeniero José María Villa pactó con el diablo para terminar la obra a tiempo, pero al intentar engañarlo, el diablo maldijo el puente. Los locales creen que en noches de tormenta, se escuchan lamentos provenientes del río Cauca.</p>
+                    <img src="https://images.unsplash.com/photo-1589994321235-8b67c3213d74?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Puente de Occidente">
+                </div>
+                <div class="interactive-item" onclick="toggleContent('jardin-leyenda')">
+                    <h3>Leyenda de la Cueva del Esplendor</h3>
+                </div>
+                <div id="jardin-leyenda" class="interactive-content">
+                    <p>En Jardín, la Cueva del Esplendor es un lugar mágico donde una cascada cae dentro de una caverna. Los campesinos cuentan que en su interior habita un espíritu protector que custodia un tesoro escondido. Solo aquellos de corazón puro pueden verlo sin ser hechizados por la cueva.</p>
+                    <img src="https://images.unsplash.com/photo-1597843786411-6b8a5e9b3a26?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Cueva del Esplendor">
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2025 Antioqueñidad - Hecho con el corazón paisa</p>
+    </footer>
+    <script>
+        function toggleContent(id) {
+            const content = document.getElementById(id);
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+            } else {
+                content.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
