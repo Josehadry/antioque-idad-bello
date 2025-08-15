@@ -1,0 +1,263 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIESTA DE LA ANTIOQUEÑIDAD INEM 2025 - Bello, Antioquia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9fafb;
+        }
+        .header-bg {
+            background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .section-title {
+            font-family: 'Georgia', serif;
+            color: #1e3a8a;
+            position: relative;
+            display: inline-block;
+        }
+        .section-title::after {
+            content: '';
+            width: 50%;
+            height: 3px;
+            background-color: #f59e0b;
+            position: absolute;
+            bottom: -4px;
+            left: 25%;
+        }
+        .gallery-img {
+            transition: transform 0.3s ease;
+        }
+        .gallery-img:hover {
+            transform: scale(1.05);
+        }
+        .accordion-header {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .accordion-header:hover {
+            background-color: #e5e7eb;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <!-- Header -->
+    <header class="header-bg text-white text-center py-16">
+        <div>
+            <h1 class="text-5xl md:text-7xl font-bold mb-4">FIESTA DE LA ANTIOQUEÑIDAD INEM 2025</h1>
+            <h2 class="text-2xl md:text-4xl">Celebrando la Esencia de Bello, Antioquia</h2>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white py-4 sticky top-0 z-10 shadow-md">
+        <ul class="flex justify-center space-x-6 md:space-x-10">
+            <li><a href="#about" class="hover:text-yellow-300 transition">Sobre Bello</a></li>
+            <li><a href="#dishes" class="hover:text-yellow-300 transition">Platos Típicos</a></li>
+            <li><a href="#figures" class="hover:text-yellow-300 transition">Personajes Históricos</a></li>
+            <li><a href="#facts" class="hover:text-yellow-300 transition">Datos Interesantes</a></li>
+            <li><a href="#location" class="hover:text-yellow-300 transition">Ubicación y Demografía</a></li>
+            <li><a href="#tourism" class="hover:text-yellow-300 transition">Turismo</a></li>
+            <li><a href="#faq" class="hover:text-yellow-300 transition">Preguntas Frecuentes</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto p-6">
+        <!-- About Bello -->
+        <section id="about" class="mb-16">
+            <h2 class="section-title text-4xl font-bold mb-6">Sobre Bello</h2>
+            <p class="text-lg leading-relaxed mb-4">
+                Bello, apodado "La Cuna de Marco Fidel Suárez," es un municipio emblemático del Valle de Aburrá, Antioquia. Fundado en 1676, Bello encarna el espíritu de la Antioqueñidad con su mezcla de tradición, trabajo arduo y hospitalidad. Es el segundo municipio más poblado de Antioquia, con una rica historia ligada a la industria textil y un presente vibrante que combina modernidad y cultura paisa. La FIESTA DE LA ANTIOQUEÑIDAD INEM 2025 es una oportunidad única para celebrar su legado y orgullo.
+            </p>
+            <p class="text-lg leading-relaxed">
+                Su ubicación estratégica, a solo 10 km de Medellín, lo convierte en un centro clave del área metropolitana. Bello es conocido por su ambiente comunitario, festividades coloridas y una gastronomía que refleja la abundancia de la región.
+            </p>
+        </section>
+
+        <!-- Typical Dishes -->
+        <section id="dishes" class="mb-16">
+            <h2 class="section-title text-4xl font-bold mb-6">Platos Típicos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold mb-2">Bandeja Paisa</h3>
+                    <p>Un ícono de la Antioqueñidad, esta abundante bandeja incluye fríjoles, arroz, carne molida, chicharrón, chorizo, huevo frito, aguacate, arepa y plátano maduro. Es un reflejo de la generosidad y el sabor paisa.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold mb-2">Sancocho Antioqueño</h3>
+                    <p>Una sopa tradicional con carne de res o cerdo, yuca, plátano, maíz, papa y cilantro. Se sirve con arroz y aguacate, ideal para reuniones familiares en Bello.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold mb-2">Mondongo</h3>
+                    <p>Una sopa de callos con vegetales, papa y hierbas, acompañada de arroz blanco, aguacate y banano. Es un plato reconfortante y típico de la región.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Historical Figures -->
+        <section id="figures" class="mb-16">
+            <h2 class="section-title text-4xl font-bold mb-6">Personajes Históricos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold mb-2">Marco Fidel Suárez (1855-1927)</h3>
+                    <p>Nacido en Bello, fue presidente de Colombia (1918-1921) y un destacado escritor. Su frase “Hacer es Pensar” simboliza el espíritu emprendedor antioqueño. Su casa natal es hoy un museo en Bello.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold mb-2">Ana Fabricia Córdoba (1955-2011)</h3>
+                    <p>Líder social de Bello que defendió los derechos de las comunidades desplazadas. Su valentía y compromiso dejaron un impacto duradero en la lucha por la justicia social.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interesting Facts -->
+        <section id="facts" class="mb-16">
+            <h2 class="section-title text-4xl font-bold mb-6">Datos Interesantes</h2>
+            <ul class="list-disc pl-6 text-lg leading-relaxed">
+                <li>Bello fue uno de los primeros municipios en industrializarse en Antioquia, gracias a la fábrica textil Fabricato, fundada en 1923.</li>
+                <li>El municipio alberga el Parque Tulio Ospina, un espacio cultural y deportivo que acoge eventos como la FIESTA DE LA ANTIOQUEÑIDAD INEM 2025.</li>
+                <li>Bello es conocido por sus festividades, como las Fiestas del Cerro Quitasol, que combinan música, danza y tradiciones paisas.</li>
+                <li>La ciudad cuenta con el primer sistema de transporte por cable (MetroCable) integrado al Metro de Medellín, facilitando la movilidad.</li>
+            </ul>
+        </section>
+
+        <!-- Location and Demographics -->
+        <section id="location" class="mb-16">
+            <h2 class="section-title text-4xl font-bold mb-6">Ubicación y Demografía</h2>
+            <p class="text-lg leading-relaxed mb-4">
+                Bello está ubicado en el Valle de Aburrá, a 10 km al norte de Medellín, en el departamento de Antioquia. Su posición estratégica lo convierte en parte integral del área metropolitana de Medellín. Con una altitud de 1,450 metros sobre el nivel del mar, Bello disfruta de un clima templado con temperaturas promedio de 22°C.
+            </p>
+            <p class="text-lg leading-relaxed">
+                Según estimaciones de 2025, Bello tiene una población de aproximadamente 550,000 habitantes, siendo el segundo municipio más poblado de Antioquia. Su demografía es diversa, con una mezcla de comunidades tradicionales y modernas, y un fuerte sentido de identidad antioqueña.
+            </p>
+            <div class="mt-6">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126898.73369738473!2d-75.5885646!3d6.3373241!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e4429a711d4d441%3A0x4b5a47e3f1b7f5b7!2sBello%2C%20Antioquia%2C%20Colombia!5e0!3m2!1ses!2sus!4v1697654321098!5m2!1ses!2sus" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </section>
+
+        <!-- Tourism -->
+        <section id="tourism" class="mb-16">
+            <h2 class="section-title text-4xl font-bold mb-6">Turismo</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold mb-2">Parque de las Aguas</h3>
+                    <p>Un parque temático con piscinas, toboganes y áreas verdes, perfecto para familias y visitantes que buscan diversión y relajación.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold mb-2">Casa Museo Marco Fidel Suárez</h3>
+                    <p>Un museo dedicado a la vida del expresidente, con exposiciones sobre su legado y la historia de Bello.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold mb-2">Cerro Quitasol</h3>
+                    <p>Un destino para caminatas y vistas panorámicas, además de ser el escenario de las tradicionales fiestas de Bello.</p>
+                </div>
+            </div>
+            <!-- Photo Gallery -->
+            <div class="mt-8">
+                <h3 class="text-2xl font-semibold mb-4">Galería de Fotos</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" alt="Parque de las Aguas" class="gallery-img rounded-lg shadow-md">
+                    <img src="https://images.unsplash.com/photo-1519985176271-2a0e1e3f71d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" alt="Casa Museo" class="gallery-img rounded-lg shadow-md">
+                    <img src="https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" alt="Cerro Quitasol" class="gallery-img rounded-lg shadow-md">
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="mb-16">
+            <h2 class="section-title text-4xl font-bold mb-6">Preguntas Frecuentes</h2>
+            <div class="space-y-4">
+                <div class="bg-white rounded-lg shadow-md">
+                    <div class="accordion-header p-4 font-semibold text-lg">¿Qué es la FIESTA DE LA ANTIOQUEÑIDAD INEM 2025?</div>
+                    <div class="accordion-content p-4 hidden">
+                        <p>Es un evento organizado por el INEM para celebrar la cultura, historia y tradiciones de Bello y Antioquia, con actividades como desfiles, música, danza y gastronomía.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md">
+                    <div class="accordion-header p-4 font-semibold text-lg">¿Cuándo y dónde se realiza?</div>
+                    <div class="accordion-content p-4 hidden">
+                        <p>La fiesta se llevará a cabo en 2025 en Bello, con eventos principales en el Parque Tulio Ospina y otros espacios culturales.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md">
+                    <div class="accordion-header p-4 font-semibold text-lg">¿Cómo puedo participar?</div>
+                    <div class="accordion-content p-4 hidden">
+                        <p>Puedes participar como visitante o inscribiéndote en actividades culturales a través de las redes oficiales del evento o del INEM Bello.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="text-center mb-16">
+            <h2 class="section-title text-4xl font-bold mb-6">¡Vive la FIESTA DE LA ANTIOQUEÑIDAD INEM 2025!</h2>
+            <p class="text-lg mb-6">Descubre la riqueza cultural de Bello, degusta su gastronomía, explora su historia y únete a la celebración más grande de Antioquia.</p>
+            <a href="https://github.com" class="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition">Explora el Repositorio en GitHub</a>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center py-8">
+        <p class="text-lg">&copy; 2025 FIESTA DE LA ANTIOQUEÑIDAD INEM - Bello, Antioquia</p>
+        <p class="mt-2">Creado con orgullo para celebrar la Antioqueñidad</p>
+    </footer>
+
+    <!-- JavaScript for Accordion -->
+    <script>
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                content.classList.toggle('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
